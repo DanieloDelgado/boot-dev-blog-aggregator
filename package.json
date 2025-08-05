@@ -1,0 +1,26 @@
+{
+  "name": "boot-dev-blog-aggregator",
+  "version": "1.0.0",
+  "description": "Boot.dev Blog Aggregator project",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "tsx ./src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanieloDelgado/boot-dev-blog-aggregator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DanieloDelgado/boot-dev-blog-aggregator/issues"
+  },
+  "homepage": "https://github.com/DanieloDelgado/boot-dev-blog-aggregator#readme",
+  "devDependencies": {
+    "@types/node": "^24.2.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.2"
+  }
+}
