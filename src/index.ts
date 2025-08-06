@@ -1,6 +1,6 @@
 import * as cmd from './command_handler';
 
-function main() {
+async function main() {
     const cmdRegistry: cmd.CommandsRegistry = {};
     const args = process.argv.slice(2);
     if (args.length === 0){
@@ -8,8 +8,10 @@ function main() {
         process.exit(1);
     }
     cmd.registerCommand(cmdRegistry, 'login', cmd.handlerLogin);
+    cmd.registerCommand(cmdRegistry, 'register', cmd.handlerRegister);
+
     try {
-        cmd.runCommand(cmdRegistry, args[0], args[1]);
+        await cmd.runCommand(cmdRegistry, args[0], args[1]);
     } catch (error) {
         if (error instanceof Error) {
             console.error(`Error: ${error.message}`);
@@ -18,6 +20,7 @@ function main() {
         }
         process.exit(1);
     }
+    process.exit(0);
 }
 
 main();
