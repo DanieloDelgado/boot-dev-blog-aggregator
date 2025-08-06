@@ -1,5 +1,7 @@
+import { cosineDistance } from 'drizzle-orm';
 import { setUser, getUser } from './config';
 import * as userQueries from './lib/db/queries/users';
+import { fetchFeed } from './rss';
 
 type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
 
@@ -44,6 +46,11 @@ export async function handlerUsers(cmdName: string, ...args: string[]) {
     for (const user of users) {
             console.log(`* ${user}${user === currentUser ? " (current)": ""}`);
     }
+}
+
+export async function handlerAggregate(cmdName: string, ...args: string[]) {
+    const feed = await fetchFeed('https://www.wagslane.dev/index.xml');
+    console.log(JSON.stringify(feed, null, 2));
 }
 
 export function registerCommand(registry: CommandsRegistry, cmdName: string, handler: CommandHandler){
