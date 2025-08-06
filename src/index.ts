@@ -12,9 +12,10 @@ async function main() {
     cmd.registerCommand(cmdRegistry, 'reset', cmd.handlerReset);
     cmd.registerCommand(cmdRegistry, 'users', cmd.handlerUsers);
     cmd.registerCommand(cmdRegistry, 'agg', cmd.handlerAggregate);
+    cmd.registerCommand(cmdRegistry, 'addfeed', cmd.handlderAddFeed);
 
     try {
-        await cmd.runCommand(cmdRegistry, args[0], args[1]);
+        await cmd.runCommand(cmdRegistry, args[0], ...args.slice(1));
     } catch (error) {
         if (error instanceof Error) {
             console.error(`Error: ${error.message}`);
