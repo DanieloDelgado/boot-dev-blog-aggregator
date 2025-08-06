@@ -10,6 +10,7 @@ async function main() {
     cmd.registerCommand(cmdRegistry, 'login', cmd.handlerLogin);
     cmd.registerCommand(cmdRegistry, 'register', cmd.handlerRegister);
     cmd.registerCommand(cmdRegistry, 'reset', cmd.handlerReset);
+    cmd.registerCommand(cmdRegistry, 'users', cmd.handlerUsers);
 
     try {
         await cmd.runCommand(cmdRegistry, args[0], args[1]);

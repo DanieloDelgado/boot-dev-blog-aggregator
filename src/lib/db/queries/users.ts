@@ -12,6 +12,11 @@ export async function getUserByName(name: string): Promise<SelectUser> {
     return result;
 }
 
+export async function getAllUsers(): Promise<string[]> {
+  const results = await db.select({ name: users.name }).from(users);
+  return results.map(user => user.name);
+}
+
 export async function deleteAllUsers()
 {
     await db.delete(users);

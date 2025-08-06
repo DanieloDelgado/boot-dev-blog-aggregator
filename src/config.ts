@@ -40,6 +40,11 @@ export function setUser(user: string) {
     writeConfig(config);
 }
 
+export function getUser(): string | undefined {
+    const config = readConfig();
+    return config.currentUserName;
+}
+
 export function readConfig(): Config {
     const configPath = getConfigFilePath();
     const config = fs.readFileSync(configPath, 'utf-8');
