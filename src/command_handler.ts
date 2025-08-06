@@ -55,7 +55,6 @@ export async function handlerAggregate(cmdName: string, ...args: string[]) {
 }
 
 export async function handlderAddFeed(cmdName: string, ...args: string[]) {
-    console.log(`Adding feed with args: ${args.length} - ${args[0]} - ${args[1]}`);
     if (args.length < 2 || args[0] === undefined || args[1] === undefined){
         throw new Error("Feed name and URL are required");
     }
@@ -71,6 +70,14 @@ export async function handlderAddFeed(cmdName: string, ...args: string[]) {
     }
     await feedQueries.createFeed(name, url, user.id);
     console.log(`Feed ${name} added successfully for user ${currentUser}`);
+}
+
+export async function handlerFeeds(cmdName: string, ...args: string[]) {
+    const feeds = await feedQueries.getFeeds();
+    for (const feed of feeds) {
+        const user = await userQueries.getUserById(feed.userId);
+        console.log(`* ${feed.name} (${feed.url}) - User: ${user.name}`);
+    }
 }
 
 export function registerCommand(registry: CommandsRegistry, cmdName: string, handler: CommandHandler){

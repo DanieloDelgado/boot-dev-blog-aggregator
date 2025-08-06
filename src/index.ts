@@ -13,6 +13,7 @@ async function main() {
     cmd.registerCommand(cmdRegistry, 'users', cmd.handlerUsers);
     cmd.registerCommand(cmdRegistry, 'agg', cmd.handlerAggregate);
     cmd.registerCommand(cmdRegistry, 'addfeed', cmd.handlderAddFeed);
+    cmd.registerCommand(cmdRegistry, 'feeds', cmd.handlerFeeds);
 
     try {
         await cmd.runCommand(cmdRegistry, args[0], ...args.slice(1));

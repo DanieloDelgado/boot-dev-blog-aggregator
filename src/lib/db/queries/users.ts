@@ -12,6 +12,11 @@ export async function getUserByName(name: string): Promise<SelectUser> {
     return result;
 }
 
+export async function getUserById(id: string): Promise<SelectUser> {
+    const [result] = await db.select().from(users).where(eq(users.id, id));
+    return result;
+}
+
 export async function getAllUsers(): Promise<string[]> {
   const results = await db.select({ name: users.name }).from(users);
   return results.map(user => user.name);
