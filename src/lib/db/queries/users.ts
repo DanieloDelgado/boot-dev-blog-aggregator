@@ -11,3 +11,8 @@ export async function getUserByName(name: string): Promise<SelectUser> {
     const [result] = await db.select().from(users).where(eq(users.name, name));
     return result;
 }
+
+export async function deleteAllUsers()
+{
+    await db.delete(users);
+}

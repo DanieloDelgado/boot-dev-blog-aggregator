@@ -33,6 +33,11 @@ export async function handlerRegister(cmdName: string, ...args: string[]) {
     console.log(response);
 }
 
+export async function handlerReset(cmdName: string, ...args: string[]) {
+    await userQueries.deleteAllUsers();
+    console.log("All users deleted successfully");
+}
+
 export function registerCommand(registry: CommandsRegistry, cmdName: string, handler: CommandHandler){
     registry[cmdName] = handler;    
 }
