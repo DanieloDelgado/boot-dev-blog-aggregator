@@ -1,7 +1,7 @@
-import { cosineDistance } from 'drizzle-orm';
 import { setUser, getUser } from './config';
 import * as userQueries from './lib/db/queries/users';
 import * as feedQueries from './lib/db/queries/feeds';
+import * as feedFollowQueries from './lib/db/queries/feed_follows';
 import { fetchFeed } from './rss';
 
 type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
@@ -68,8 +68,10 @@ export async function handlderAddFeed(cmdName: string, ...args: string[]) {
     if (!user) {
         throw new Error(`User ${currentUser} does not exist`);
     }
-    await feedQueries.createFeed(name, url, user.id);
+    const feed = await feedQueries.createFeed(name, url, user.id);
     console.log(`Feed ${name} added successfully for user ${currentUser}`);
+
+    await feedFollowQueries.createFeedFollow(user.id, feed.id);
 }
 
 export async function handlerFeeds(cmdName: string, ...args: string[]) {
@@ -77,6 +79,52 @@ export async function handlerFeeds(cmdName: string, ...args: string[]) {
     for (const feed of feeds) {
         const user = await userQueries.getUserById(feed.userId);
         console.log(`* ${feed.name} (${feed.url}) - User: ${user.name}`);
+    }
+}
+
+export async function handlerFollow(cmdName: string, ...args: string[]) {
+    if (args.length == 0 || args[0] === undefined){
+        throw new Error("Url is required");
+    }
+    const feed = await feedQueries.getFeedByUrl(args[0]);
+    if (!feed) {
+        throw new Error(`Feed ${args[0]} does not exist`);
+    }
+
+    const currentUser = getUser();
+    if (!currentUser) {
+        throw new Error("No user logged in");
+    }
+
+    const user = await userQueries.getUserByName(currentUser);
+    if (!user) {
+        throw new Error(`User ${currentUser} does not exist`);
+    }
+
+    await feedFollowQueries.createFeedFollow(user.id, feed.id);
+    console.log(`Feed "${feed.name}" followed successfully by user ${currentUser}`);
+}
+
+export async function handlerFollowing(cmdName: string, ...args: string[]) {
+    const currentUser = getUser();
+    if (!currentUser) {
+        throw new Error("No user logged in");
+    }
+
+    const user = await userQueries.getUserByName(currentUser);
+    if (!user) {
+        throw new Error(`User ${currentUser} does not exist`);
+    }
+
+    const follows = await feedFollowQueries.getFeedFollowsForUser(user.id);
+    if (follows.length === 0) {
+        console.log(`${currentUser} is not following any feeds.`);
+        return;
+    }
+
+    console.log(`${currentUser} is following the following feeds:`);
+    for (const follow of follows) {
+        console.log(`- ${follow.feed}`);
     }
 }
 

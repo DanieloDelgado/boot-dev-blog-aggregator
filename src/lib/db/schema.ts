@@ -1,4 +1,4 @@
-import { pgTable, timestamp, uuid, text } from "drizzle-orm/pg-core";
+import { pgTable, timestamp, uuid, text, unique } from "drizzle-orm/pg-core";
 import { type InferSelectModel } from 'drizzle-orm'
 
 
@@ -27,3 +27,18 @@ export const feeds = pgTable("feeds", {
 });
 
 export type SelectFeed = InferSelectModel<typeof feeds>;
+
+export const feedFollows = pgTable("feed_follows", {
+    id: uuid("id").primaryKey().defaultRandom().notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+        .notNull()
+        .defaultNow()
+        .$onUpdate(() => new Date()),
+    feedId: uuid("feed_id").references(() => feeds.id, {onDelete: 'cascade'}).notNull(),
+    userId: uuid("user_id").references(() => users.id, {onDelete: 'cascade'}).notNull(),   
+}, (t) => [
+    unique().on(t.feedId, t.userId)
+]);
+
+export type SelectFeedFollow = InferSelectModel<typeof feedFollows>;
