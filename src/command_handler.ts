@@ -123,6 +123,18 @@ export async function handlerFollowing(cmdName: string, user: SelectUser, ...arg
     }
 }
 
+export async function handlerUnfollow(cmdName: string, user: SelectUser,...args: string[]) {
+    if (args.length == 0 || args[0] === undefined){
+        throw new Error("Url is required");
+    }
+    const feed = await feedQueries.getFeedByUrl(args[0]);
+    if (!feed) {
+        throw new Error(`Feed ${args[0]} does not exist`);
+    }
+
+    await feedFollowQueries.deleteFeedFollow(user.id, feed.id);
+}
+
 export function registerCommand(registry: CommandsRegistry, cmdName: string, handler: CommandHandler){
     registry[cmdName] = handler;    
 }
