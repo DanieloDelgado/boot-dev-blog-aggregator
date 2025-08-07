@@ -2,9 +2,9 @@ import { setUser, getUser } from './config';
 import * as userQueries from './lib/db/queries/users';
 import * as feedQueries from './lib/db/queries/feeds';
 import * as feedFollowQueries from './lib/db/queries/feed_follows';
+import * as postQueries from './lib/db/queries/posts';
 import { scrapeFeeds } from './rss';
 import type { SelectUser } from './lib/db/schema';
-import { duration } from 'drizzle-orm/gel-core';
 
 
 type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
@@ -170,6 +170,17 @@ export async function handlerUnfollow(cmdName: string, user: SelectUser,...args:
     }
 
     await feedFollowQueries.deleteFeedFollow(user.id, feed.id);
+}
+
+export async function handlerBrowse(cmdName: string, user: SelectUser,...args: string[]) {
+    let numberOfPosts = 2;
+    if (args.length == 1 || args[0] !== undefined){
+        numberOfPosts = Number(args[0])
+    }
+    const posts = await postQueries.getPostByUserID(user.id, numberOfPosts);
+    for (const post of posts){
+        console.log(post)
+    }
 }
 
 export function registerCommand(registry: CommandsRegistry, cmdName: string, handler: CommandHandler){

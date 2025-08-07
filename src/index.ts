@@ -17,6 +17,7 @@ async function main() {
     cmd.registerCommand(cmdRegistry, 'follow', cmd.requireLogin(cmd.handlerFollow));
     cmd.registerCommand(cmdRegistry, 'following', cmd.requireLogin(cmd.handlerFollowing));
     cmd.registerCommand(cmdRegistry, 'unfollow', cmd.requireLogin(cmd.handlerUnfollow));
+    cmd.registerCommand(cmdRegistry, 'browse', cmd.requireLogin(cmd.handlerBrowse));
     
     try {
         await cmd.runCommand(cmdRegistry, args[0], ...args.slice(1));
