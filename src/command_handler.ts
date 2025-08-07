@@ -2,8 +2,9 @@ import { setUser, getUser } from './config';
 import * as userQueries from './lib/db/queries/users';
 import * as feedQueries from './lib/db/queries/feeds';
 import * as feedFollowQueries from './lib/db/queries/feed_follows';
-import { fetchFeed } from './rss';
+import { scrapeFeeds } from './rss';
 import type { SelectUser } from './lib/db/schema';
+import { duration } from 'drizzle-orm/gel-core';
 
 
 type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
@@ -14,6 +15,26 @@ type UserCommandHandler = (
   ...args: string[]
 ) => Promise<void>;
 
+
+function parseDuration(durationStr: string){
+    const regex = /^(\d+)(ms|s|m|h)$/;
+    const match = durationStr.match(regex);
+    if (!match) {
+        throw new Error("Invalid time")
+    }
+    let duration = Number(match[1])
+    switch (match[2]){
+        case "s":
+            duration *= 1000;
+            break;
+        case "m":
+            duration *= 60000;
+            break;
+        case "h":
+            duration *= 3600000;
+    }
+    return duration;
+}
 
 export function requireLogin(handler: UserCommandHandler): CommandHandler {
     return async (cmdName: string, ...args: string[]) => {
@@ -73,8 +94,24 @@ export async function handlerUsers(cmdName: string, ...args: string[]) {
 }
 
 export async function handlerAggregate(cmdName: string, ...args: string[]) {
-    const feed = await fetchFeed('https://www.wagslane.dev/index.xml');
-    console.log(JSON.stringify(feed, null, 2));
+    if (args.length < 1 || args[0] === undefined){
+        throw new Error("Time betwee requests is required");
+    }
+    const timeBetweenRequests = parseDuration(args[0]);
+    console.log(`Collecting feeds every ${timeBetweenRequests / 1000}s`);
+
+    const interval = setInterval(() => {
+    scrapeFeeds();
+    }, timeBetweenRequests);
+
+    await new Promise<void>((resolve) => {
+        process.on("SIGINT", () => {
+            console.log("Shutting down feed aggregator...");
+            clearInterval(interval);
+            resolve();
+        });
+    });
+
 }
 
 export async function handlderAddFeed(cmdName: string, user: SelectUser, ...args: string[]) {
