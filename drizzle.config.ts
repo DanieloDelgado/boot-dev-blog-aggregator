@@ -5,7 +5,7 @@ const config = readConfig();
 
 export default defineConfig({
   schema: "src/lib/db/schema.ts",
-  out: "src/lib/db",
+  out: "migration",
   dialect: "postgresql",
   dbCredentials: {
     url: config.dbUrl,
